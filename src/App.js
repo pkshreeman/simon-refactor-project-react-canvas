@@ -1,18 +1,23 @@
-import React, { Component } from 'react';
+import React, {
+  Component
+} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
 const data = {
- 'audio1' : new Audio("https://s3.amazonaws.com/freecodecamp/simonSound1.mp3"),
- 'audio2' : new Audio("https://s3.amazonaws.com/freecodecamp/simonSound2.mp3"),
- 'audio3' : new Audio("https://s3.amazonaws.com/freecodecamp/simonSound3.mp3"),
- 'audio4' : new Audio("https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"),
+  'audio': [
+    "",
+    new Audio("https://s3.amazonaws.com/freecodecamp/simonSound1.mp3"),
+    new Audio("https://s3.amazonaws.com/freecodecamp/simonSound2.mp3"),
+    new Audio("https://s3.amazonaws.com/freecodecamp/simonSound3.mp3"),
+    new Audio("https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"),
+  ],
   'switch': false,
   'strict': false,
   'userInput': [],
-  'matchMe':[],
+  'matchMe': [],
   'purple': '#d5aee2',
-  'green':'#60ff70',
+  'green': '#60ff70',
   'blue': '#6dd0ff',
   'pink': '#f76ccd',
 }
@@ -64,56 +69,144 @@ function drawCircles() {
 }
 
 const Elems = (props) => {
-  return(
-<div>
-<canvas id="green"  width="150" height="150" onClick={props.clickon} />
-<canvas id="blue"   width="150" height="150" onClick={props.clickon} />
-<br />
-<canvas id="pink"   width="150" height="150" onClick={props.clickon} />
-<canvas id="purple" width="150" height="150" onClick={props.clickon} />
+  return ( <div >
+    <
+    canvas id = "green"
+    width = "150"
+    height = "150"
+    onClick = {
+      props.clickon
+    }
+    />
+     <
+    canvas id = "blue"
+    width = "150"
+    height = "150"
+    onClick = {
+      props.clickon
+    }
+    /> <
+    br / >
+    <
+    canvas id = "pink"
+    width = "150"
+    height = "150"
+    onClick = {
+      props.clickon
+    }
+    /> <
+    canvas id = "purple"
+    width = "150"
+    height = "150"
+    onClick = {
+      props.clickon
+    }
+    />
 
-<button id="switch" onClick={drawCirclesOn}> {props.power}</button>
-<button id="strict" onClick={strictSwitch}> {props.strict}</button>
-<button id="reset" onClick=""> Reset </button>
-<span> {props.view} </span>
-</div>
-)}
-
-function drawCirclesOn() {
-  drawcircle("pink", data.pink);
-  drawcircle("blue", data.blue);
-  drawcircle("green", data.green);
-  drawcircle("purple", data.purple);
+    <
+    button id = "switch"
+    onClick = {
+      props.clickon
+    } > {
+      props.power
+    } < /button> <
+    button id = "strict"
+    onClick = {
+      props.clickon
+    } > {
+      props.strict
+    } < /button> <
+    button id = "reset"
+    onClick = "" > Reset < /button> <
+    span > {
+      props.view
+    } < /span> <
+    /div>
+  )
 }
 
-function strictSwitch(){
-  if (data.switch) {data.switch = false}
-  else{data.switch = true};
-  console.log(data.switch);
+function drawCirclesOn(current) {
+  drawcircle("pink", current.pink);
+  drawcircle("blue", current.blue);
+  drawcircle("green", current.green);
+  drawcircle("purple", current.purple);
 }
 
 class CreateCanvas extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.state = {
+      'audio': [
+        "",
+        new Audio("https://s3.amazonaws.com/freecodecamp/simonSound1.mp3"),
+        new Audio("https://s3.amazonaws.com/freecodecamp/simonSound2.mp3"),
+        new Audio("https://s3.amazonaws.com/freecodecamp/simonSound3.mp3"),
+        new Audio("https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"),
+      ],
+      'userInput': [],
+      'matchMe': [],
+      'purple': '#d5aee2',
+      'green': '#60ff70',
+      'blue': '#6dd0ff',
+      'pink': '#f76ccd',
+      'switch': 'OFF',
+      'strict': 'NotStrict'
+    }
   }
 
-  handleClick(event){
+
+
+  handleClick(event) {
     let clickedId = event.target.id;
-    console.log(clickedId);
-    setTimeout(() => drawcircle(clickedId, clickedId), 100);
-    setTimeout(()=> drawcircle(clickedId, data[clickedId]), 200);
-    data.userInput.push(clickedId);
+
+    console.log("The clicked element's id is " + clickedId);
+
+    if (clickedId === 'green' || clickedId === 'blue' || clickedId === 'pink' || clickedId === 'purple') {
+      //console.log("Only green, blue, pink, purple should trigger this");
+      setTimeout(() => drawcircle(clickedId, clickedId), 100);
+      setTimeout(() => drawcircle(clickedId, data[clickedId]), 200);
+      data.userInput.push(clickedId);
+    }
+
+    else if (clickedId == 'switch') {
+    if (this.state.switch === "OFF") {
+      this.setState({
+        "switch": 'ON'
+      })
+    } else {
+      this.setState({
+        "switch": 'OFF'
+      })
+    };
+  }
+
+  else if (clickedId == 'strict') {
+  if (this.state.strict == "STRICT") {
+    this.setState({
+      "strict": 'NotStrict',
+      "green": 'black',
+    })
+  } else {
+    this.setState({
+      "strict": 'STRICT'
+    })
+  };
+}
   }
 
   render() {
-    return (
-      <Elems strict="NotStrict" power="OFF" clickon={this.handleClick} />
+    return ( <
+      Elems
+      strict = {this.state.strict}
+      power = {this.state.switch}
+      clickon = {this.handleClick}
+      />
     );
   }
 
   componentDidMount() {
-    drawCircles();
+    drawCirclesOn(this.state);
   }
 
 }
