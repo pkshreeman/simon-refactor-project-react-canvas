@@ -172,12 +172,26 @@ class CreateCanvas extends React.Component {
     else if (clickedId == 'switch') {
     if (this.state.switch === "OFF") {
       this.setState({
-        "switch": 'ON'
+        "switch": 'ON',
+        "green" : 'green',
+        "blue" : 'blue',
+        "purple": 'purple',
+        "pink": "pink",
       })
+      //I have to initate this draw function.
+      //I expected React to automatically do that upon state changes?
+      drawCirclesOn(this.state);
     } else {
       this.setState({
-        "switch": 'OFF'
+        "switch": 'OFF',
+        'purple': '#d5aee2',
+        'green': '#60ff70',
+        'blue': '#6dd0ff',
+        'pink': '#f76ccd',
       })
+      //I have to initate this draw function.
+      //I expected React to automatically do that upon state changes?
+      drawCirclesOn(this.state);
     };
   }
 
