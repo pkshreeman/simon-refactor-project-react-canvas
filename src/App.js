@@ -16,7 +16,11 @@ const data = {
   'blue': '#6dd0ff',
   'pink': '#f76ccd',
 }
-// The plan is to use this json data to set states, so that if I change any values in this, the React.js will automatically update the DOM.  For example, setting up the colors within the canvas hopefully will trigger every time I switch the color, instead of manually drawing the canvas.
+// The plan is to use this json data to set states, so that
+//if I change any values in this, the React.js will automatically
+//update the DOM.  For example, setting up the colors within the canvas
+//hopefully will trigger every time I switch the color, instead of manually
+//drawing the canvas.
 
 
 function drawcircle(id, color) {
@@ -59,6 +63,22 @@ function drawCircles() {
   drawcircle("purple", "purple");
 }
 
+const Elems = (props) => {
+  return(
+<div>
+<canvas id="green"  width="150" height="150" onClick={props.clickon} />
+<canvas id="blue"   width="150" height="150" onClick={props.clickon} />
+<br />
+<canvas id="pink"   width="150" height="150" onClick={props.clickon} />
+<canvas id="purple" width="150" height="150" onClick={props.clickon} />
+
+<button id="switch" onClick={drawCirclesOn}> {props.power}</button>
+<button id="strict" onClick={strictSwitch}> {props.strict}</button>
+<button id="reset" onClick=""> Reset </button>
+<span> {props.view} </span>
+</div>
+)}
+
 function drawCirclesOn() {
   drawcircle("pink", data.pink);
   drawcircle("blue", data.blue);
@@ -78,94 +98,24 @@ class CreateCanvas extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(){
-    let clickedId = 'test '//event.target.id;
+  handleClick(event){
+    let clickedId = event.target.id;
     console.log(clickedId);
     setTimeout(() => drawcircle(clickedId, clickedId), 100);
     setTimeout(()=> drawcircle(clickedId, data[clickedId]), 200);
     data.userInput.push(clickedId);
+  }
 
-
+  render() {
+    return (
+      <Elems strict="NotStrict" power="OFF" clickon={this.handleClick} />
+    );
   }
 
   componentDidMount() {
     drawCircles();
   }
 
-  render() {
-    return ( <div>
-    <canvas id="green"  width="150" height="150" onClick={this.handleClick}/>
-    <canvas id="blue"   width="150" height="150" onClick={this.handleClick}/>
-    <br />
-    <canvas id="pink"   width="150" height="150" onClick={this.handleClick}/>
-    <canvas id="purple" width="150" height="150" onClick={this.handleClick}/>
-
-    <button id="switch" onClick={drawCirclesOn}> </button>
-    <button id="strict" onClick={strictSwitch}> </button>
-
-    <span> Hi! </span>
-
-  </div>);
-  }
 }
-
-
-//ReactDOM.render(<CreateCanvas />, document.getElementById("container"));
-
 
 export default CreateCanvas
-
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
-}
-
-//export default App;
-
-const Elem = (props) =>{
-  return (<div>
-    <h1 onClick={props.clickon} id="GM"> Good Morning!
-      <br/>
-      {props.name} {props.last}
-      <br />
-      This is phase three</h1>
-    <button id="btn1" onClick={props.clickon}> {props.text} </button>
-      <button id="btn2" onClick={props.clickon}> Second Button </button>
-      </div>
-  );
-};
-
-
-
-class App2 extends React.Component{
-  constructor(props) {
-   super(props);
-   this.handleClick = this.handleClick.bind(this);
- }
-
-handleClick(){
-  //var clickedId = event.target.id;
-    //console.log(clickedId);
-    alert("This works...without ID")
-  //alert("It works! You clicked " + clickedId)
-}
-  render(){
-    return (
-    <Elem name = 'paul' last='shreeman' clickon={this.handleClick} text='PushMe'/>
-  )
-}
-}
-
-//ReactDOM.render(<App />, document.getElementById('root'))
-//export default App2

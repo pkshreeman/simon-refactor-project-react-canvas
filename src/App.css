@@ -22,3 +22,41 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+* {
+  border: 1px solid blue;
+}
+
+#switch{
+  position: absolute;
+  top: 200px;
+  left: 135px;
+  width: 40px;
+  background-color: red;}
+
+#strict{
+  position: absolute;
+  top: 170px;
+  left: 160px;
+  width: 60px;
+  background-color: black;
+  color: white;
+}
+
+#reset{
+  position:absolute;
+  top: 170px;
+  left: 110px;
+}
+
+
+canvas{
+  margin: -1px 1px;
+}
+
+
+span{
+  position: absolute;
+  top: 145px;
+  left: 150px;
+}
