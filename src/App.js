@@ -4,30 +4,6 @@ import React, {
 import logo from './logo.svg';
 import './App.css';
 
-const data = {
-  'audio': [
-    "",
-    new Audio("https://s3.amazonaws.com/freecodecamp/simonSound1.mp3"),
-    new Audio("https://s3.amazonaws.com/freecodecamp/simonSound2.mp3"),
-    new Audio("https://s3.amazonaws.com/freecodecamp/simonSound3.mp3"),
-    new Audio("https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"),
-  ],
-  'switch': false,
-  'strict': false,
-  'userInput': [],
-  'matchMe': [],
-  'purple': '#d5aee2',
-  'green': '#60ff70',
-  'blue': '#6dd0ff',
-  'pink': '#f76ccd',
-}
-// The plan is to use this json data to set states, so that
-//if I change any values in this, the React.js will automatically
-//update the DOM.  For example, setting up the colors within the canvas
-//hopefully will trigger every time I switch the color, instead of manually
-//drawing the canvas.
-
-
 function drawcircle(id, color) {
   var context = document.getElementById(id).getContext("2d");
   var x = 75;
@@ -35,23 +11,23 @@ function drawcircle(id, color) {
 
   switch (id) {
     case 'purple':
-      x = 0;
-      y = 0;
+      x = -10;
+      y = -10;
       break;
 
     case 'pink':
-      x = 150;
-      y = 0;
+      x = 160;
+      y = -10;
       break;
 
     case 'blue':
-      x = 0;
-      y = 150;
+      x = -10;
+      y = 160;
       break;
 
     case 'green':
-      x = 150;
-      y = 150;
+      x = 160;
+      y = 160;
       break;
   }
   context.beginPath();
@@ -61,49 +37,36 @@ function drawcircle(id, color) {
   context.stroke();
 }
 
-function drawCircles() {
-  drawcircle("pink", "pink");
-  drawcircle("blue", "blue");
-  drawcircle("green", "green");
-  drawcircle("purple", "purple");
-}
-
 const Elems = (props) => {
-  return ( <div >
-    <
+  return ( <div ><
     canvas id = "green"
     width = "150"
     height = "150"
     onClick = {
       props.clickon
     }
-    />
-     <
+    /><
     canvas id = "blue"
     width = "150"
     height = "150"
     onClick = {
       props.clickon
     }
-    /> <
-    br / >
-    <
+    /><br / ><
     canvas id = "pink"
     width = "150"
     height = "150"
     onClick = {
       props.clickon
     }
-    /> <
+    /><
     canvas id = "purple"
     width = "150"
     height = "150"
     onClick = {
       props.clickon
     }
-    />
-
-    <
+    /><
     button id = "switch"
     onClick = {
       props.clickon
@@ -117,13 +80,30 @@ const Elems = (props) => {
       props.strict
     } < /button> <
     button id = "reset"
-    onClick = "" > Reset < /button> <
+    onClick ={props.clickon} > Reset < /button> <
     span > {
       props.view
     } < /span> <
     /div>
   )
 }
+function createRandomSelection (current){
+  let selected = [];
+  for (let i = 0; i < 20; i++){
+    //https://css-tricks.com/snippets/javascript/select-random-item-array/
+    //let randomcolor = this.state.selector[Math.floor(Math.random()*this.state.selector.length)];
+    //console.log(randomcolor);
+    //this.setState({matchMe:[...this.state.matchMe, randomcolor]});
+    let selector = ['green',"blue",'purple',"pink"];
+
+    selected.push(selector[Math.floor(Math.random()*selector.length)]);
+    console.log("selected")
+  //  return selected;
+
+  }
+  current.setState({matchMe: selected});
+}
+
 
 function drawCirclesOn(current) {
   drawcircle("pink", current.pink);
@@ -131,7 +111,33 @@ function drawCirclesOn(current) {
   drawcircle("green", current.green);
   drawcircle("purple", current.purple);
 }
+//Start of logic for Simon
+function theLogic(current){
+  console.log("theLogic function is triggered.")
+  // 20 times the game is over //
+  if (current.userInput.length == 20){
+    alert("Congratulations! You have won!");
+    document.getElementById('switch').click();
+  }
+  else{
+    console.log("This is current userInput: " + current.userInput);
+    console.log("This is matchMe array: " + current.matchMe);
+    console.log("The Length of userInput is "+ current.userInput.length)
 
+    for(let i = 0; i < current.userInput.length; i++){
+      if (current.userInput[i] != current.matchMe[i]){
+      console.log("the loop is at " + i);
+      alert("You idiot!");
+      if(current.strict == 'STRICT'){
+      document.getElementById('reset').click()}
+      }
+    }
+  }
+  // If strict, reset
+
+  //can you return a 'setState'?
+}
+//End of Logic for Simon
 class CreateCanvas extends React.Component {
   constructor(props) {
     super(props);
@@ -144,68 +150,79 @@ class CreateCanvas extends React.Component {
         new Audio("https://s3.amazonaws.com/freecodecamp/simonSound3.mp3"),
         new Audio("https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"),
       ],
+      'demo':false,
       'userInput': [],
       'matchMe': [],
-      'purple': '#d5aee2',
-      'green': '#60ff70',
-      'blue': '#6dd0ff',
-      'pink': '#f76ccd',
+      "green" : 'green',
+      "blue" : 'blue',
+      "purple": 'purple',
+      "pink": "pink",
       'switch': 'OFF',
       'strict': 'NotStrict'
     }
   }
 
-
-
+  //Captures all the clicking activities within the React Component
   handleClick(event) {
     let clickedId = event.target.id;
 
-    console.log("The clicked element's id is " + clickedId);
+    //console.log("The clicked element's id is " + clickedId);
+
 
     if (clickedId === 'green' || clickedId === 'blue' || clickedId === 'pink' || clickedId === 'purple') {
       //console.log("Only green, blue, pink, purple should trigger this");
-      setTimeout(() => drawcircle(clickedId, clickedId), 100);
-      setTimeout(() => drawcircle(clickedId, data[clickedId]), 200);
-      data.userInput.push(clickedId);
+      if(this.state.switch == 'ON'){
+      setTimeout(() => drawcircle(clickedId, clickedId), 50);
+      setTimeout(() => drawcircle(clickedId, this.state[clickedId]), 300);
+      //https://stackoverflow.com/questions/26253351/correct-modification-of-state-arrays-in-reactjs
+      this.setState({userInput:[...this.state.userInput, clickedId]});
+      //console.log(this.state.userInput)
     }
+  }
+
 
     else if (clickedId == 'switch') {
     if (this.state.switch === "OFF") {
       this.setState({
         "switch": 'ON',
+        'purple': '#d5aee2',
+        'green': '#60ff70',
+        'blue': '#6dd0ff',
+        'pink': '#ffeaf6',
+      })
+      createRandomSelection(this);
+
+    } else {
+      this.setState({
+        "switch": 'OFF',
         "green" : 'green',
         "blue" : 'blue',
         "purple": 'purple',
         "pink": "pink",
       })
-      //I have to initate this draw function.
-      //I expected React to automatically do that upon state changes?
-      drawCirclesOn(this.state);
-    } else {
-      this.setState({
-        "switch": 'OFF',
-        'purple': '#d5aee2',
-        'green': '#60ff70',
-        'blue': '#6dd0ff',
-        'pink': '#f76ccd',
-      })
-      //I have to initate this draw function.
-      //I expected React to automatically do that upon state changes?
-      drawCirclesOn(this.state);
-    };
+      https://stackoverflow.com/questions/6367339/trigger-a-button-click-from-a-non-button-element
+      document.getElementById('reset').click();
+      };
   }
 
   else if (clickedId == 'strict') {
   if (this.state.strict == "STRICT") {
     this.setState({
       "strict": 'NotStrict',
-      "green": 'black',
     })
   } else {
     this.setState({
       "strict": 'STRICT'
     })
   };
+}
+
+else if (clickedId =='reset'){
+  this.setState({
+    "strict": 'NotStrict',
+    "matchMe": [],
+    "userInput": []
+  })
 }
   }
 
@@ -215,6 +232,7 @@ class CreateCanvas extends React.Component {
       strict = {this.state.strict}
       power = {this.state.switch}
       clickon = {this.handleClick}
+      view={this.state.matchMe.length}
       />
     );
   }
@@ -223,6 +241,11 @@ class CreateCanvas extends React.Component {
     drawCirclesOn(this.state);
   }
 
+componentDidUpdate(){
+  drawCirclesOn(this.state);
+  theLogic(this.state);
 }
+}
+
 
 export default CreateCanvas
