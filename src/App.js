@@ -1,7 +1,7 @@
 import React, {
   Component
 } from 'react';
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import './App.css';
 
 function drawcircle(id, color) {
@@ -30,6 +30,9 @@ function drawcircle(id, color) {
       y = 160;
       break;
   }
+  context.clearRect(0,0,150,150)
+  //https://stackoverflow.com/questions/11773811/redrawing-canvas-in-html5-using-javascript
+  //I was hoping clearing React would solve the simuulateous lighting problems...It didn't.
   context.beginPath();
   context.arc(x, y, 115, 0 * Math.PI, 2 * Math.PI, true);
   context.strokeStyle = color;
@@ -87,6 +90,7 @@ const Elems = (props) => {
     /div>
   )
 }
+
 function createRandomSelection (current){
   let selected = [];
   for (let i = 0; i < 20; i++){
@@ -107,34 +111,73 @@ function drawCirclesOn(current) {
   drawcircle("green", current.green);
   drawcircle("purple", current.purple);
 }
+
 //Start of logic for Simon
-function theLogic(current) {
-  //console.log("theLogic function is triggered.")
+function theLogic(current) {  // current = 'this'
+  console.log("the Logic function is triggered.")
+  console.log('the userInput should have at least one result: '+ current.state.userInput)
+  let cycle = current.state.userInput.length;
+  let level = current.state.level;
+  if (cycle < level){return}
   // 20 times the game is over //
-  if (current.userInput.length == 20) {
+
+  /*
+  if (current.state.userInput.length == 20) {
     alert("Congratulations! You have won!");
     document.getElementById('switch').click();
-  } else {
+  } else {*/
+
     // Checking if the input matches...
-    for (let i = 0; i < current.userInput.length; i++) {
-      if (current.userInput[i] != current.matchMe[i]) {
-        console.log("the loop is at " + i);
-        alert("You idiot!");
-        if (current.strict == 'STRICT') {
+  else if (cycle === level){
+    for (var i = 0; i < cycle; i++) {
+      //if you entered a wrong entry....
+      console.log('the logic checking loop is activated: ' + i )
+      if (current.state.userInput[i] != current.state.matchMe[i]) {
+        console.log("the logic loop is at " + i + ' with no match triggered');
+        console.log('the input value was ' + current.state.userInput[i]);
+        console.log('the matchMe value was '+ current.state.matchMe[i]);
+        if (current.state.strict == 'STRICT') {  //in Strict Mode
+          alert("You idiot! Start over!");
           document.getElementById('reset').click()
+          return;
+        }
+        else{   //if not strict, then what?
+          alert("Wrong. Please attempt again. (You are not in strict mode, so no startovers)");
+          current.setState({userInput: []},()=>{demoMatch(current.state)});
+          return;
         }
       }
-    }
+      //All Entries are correct then...
+    } //End of for loop of matching inputs
+
+    current.setState({userInput: [], level: current.state.level + 1,},()=>{demoMatch(current.state)});
   }
+  else{ alert('Error: The userInput exceeded the level')}
 }
 //End of Logic for Simon
+//Setting up sequence of light function seperately
+function demoLight(current,i){
+setTimeout(() => drawcircle(current.matchMe[i],current.matchMe[i]), 500);
+setTimeout(()=> {console.log('timeout .5 sec' )}, 500);
+setTimeout(() => drawcircle(current.matchMe[i], current[current.matchMe[i]]), 800);
+setTimeout(()=> {'timeout part 2 0.5 sec'}, 500);
+}
 //demo function
 function demoMatch(current){ //enter this.state as current
-  let cycle = current.userInput.length;
-  for( let i = 0 ; i < cycle + 1 ; i++){
-    setTimeout(() => drawcircle(current.matchMe[i],current.matchMe[i]), 500);
-    setTimeout(() => drawcircle(current.matchMe[i], current[current.matchMe[i]]), 800);
-  }
+  console.log('demo on the level of '+ current.level)
+  //for( let i = 0 ; i < current.level; i++){
+  let i = 0;
+    let intervalHandler = setInterval( function() { //https://stackoverflow.com/questions/21465280/how-to-control-for-loop-exection-in-javascript-what-should-this-javascript-code
+        demoLight(current,i)
+        if( i === current.level - 1 ) {
+             clearInterval( intervalHandler );
+             return;
+        }
+        i++;
+    }, 1000 );
+
+    //setTimeout(()=>{demoLight(current,i)}),2200
+
 }
 
 // Start of React Component
@@ -158,7 +201,8 @@ class CreateCanvas extends React.Component {
       "purple": 'purple',
       "pink": "pink",
       'switch': 'OFF',
-      'strict': 'NotStrict'
+      'strict': 'NotStrict',
+      'level' : 0,
     }
   }
 
@@ -174,19 +218,20 @@ class CreateCanvas extends React.Component {
             'green': '#60ff70',
             'blue': '#6dd0ff',
             'pink': '#ffeaf6',
-          })
-          createRandomSelection(this);
+            'level': 1,
+          },
+          createRandomSelection(this))
 
         } else {
-          this.setState({
-            "switch": 'OFF',
-            "green": 'green',
-            "blue": 'blue',
-            "purple": 'purple',
-            "pink": "pink",
-          })
-          https: //stackoverflow.com/questions/6367339/trigger-a-button-click-from-a-non-button-element
+        //  https: //stackoverflow.com/questions/6367339/trigger-a-button-click-from-a-non-button-element
             document.getElementById('reset').click();
+            this.setState({
+              "switch": 'OFF',
+              "green": 'green',
+              "blue": 'blue',
+              "purple": 'purple',
+              "pink": "pink",
+            });
         };
       }
 
@@ -201,9 +246,7 @@ class CreateCanvas extends React.Component {
           //https://stackoverflow.com/questions/26253351/correct-modification-of-state-arrays-in-reactjs
           this.setState({
             userInput: [...this.state.userInput, clickedId]
-          });
-          //console.log(this.state.userInput)
-          theLogic(this.state);
+          }, ()=>{theLogic(this)});
         }
       }
 
@@ -226,7 +269,8 @@ else if (clickedId =='reset'){
   this.setState({
     "strict": 'NotStrict',
     "matchMe": [],
-    "userInput": []
+    "userInput": [],
+    "level":1,
   })
   createRandomSelection(this)
 }
@@ -239,7 +283,7 @@ else if (clickedId =='reset'){
       strict = {this.state.strict}
       power = {this.state.switch}
       clickon = {this.handleClick}
-      view={this.state.matchMe.length}
+      view={this.state.level}
       />
     );
   }
