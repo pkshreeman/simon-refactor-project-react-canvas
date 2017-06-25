@@ -52,7 +52,9 @@ function drawcircle(id, color) {
 
 //The HTML elements to implemented in DOM before the drawing can occur.
 const Elems = (props) => {
-  return ( <div className="simonbox">
+  return (
+<div>
+    <div className="simonbox">
   <div className="simonbox2"><
     canvas id = "green"
     width = "150"
@@ -94,12 +96,20 @@ const Elems = (props) => {
     } > {
       props.strict
     } < /button> <
-    button id = "reset"
+    button id = "reset" class="button btn"
     onClick ={props.clickon} > Reset < /button> <
     span > {
       props.view
-    } < /span> <
-    /div></div>
+    } < /span>
+    <p>
+    Created with HTML5 Canvas and React.js
+    <br/>
+    by
+    <br/>
+    <a href="mailto:pkshreeman@gmail.com" >Dr. Paul Shreeman</a>
+    </p>
+    </div></div>
+    </div>
   )
 }
 
